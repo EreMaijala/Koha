@@ -1,3 +1,5 @@
+[% USE Koha %]
+[% SET KOHA_VERSION = Koha.Preference('Version') %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>Koha &rsaquo; Administration &rsaquo; Elastic Search mappings</title>
 [% INCLUDE 'doc-head-close.inc' %]
@@ -88,7 +90,7 @@ a.add, a.delete {
 
     <h1>Search engine configuration</h1>
     <div class="warning">
-        Warning: Any modification in these configurations will need a total reindexation to be fully taken into account !
+        Warning: Any modification of this configuration requires a complete index rebuild to be fully taken into account!
     </div>
     [% IF errors %]
         <div class="error">
@@ -162,6 +164,16 @@ a.add, a.delete {
                             <option value="sum" selected="selected">Sum</option>
                           [% ELSE %]
                             <option value="sum">Sum</option>
+                          [% END %]
+                          [% IF search_field.type == "isbn" %]
+                            <option value="isbn" selected="selected">ISBN</option>
+                          [% ELSE %]
+                            <option value="isbn">ISBN</option>
+                          [% END %]
+                          [% IF search_field.type == "stdno" %]
+                            <option value="stdno" selected="selected">Std. Number</option>
+                          [% ELSE %]
+                            <option value="stdno">Std. Number</option>
                           [% END %]
                         </select>
                       </td>
