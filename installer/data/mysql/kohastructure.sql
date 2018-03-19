@@ -152,6 +152,7 @@ DROP TABLE IF EXISTS `biblio_framework`;
 CREATE TABLE `biblio_framework` ( -- information about MARC frameworks
   `frameworkcode` varchar(4) NOT NULL default '', -- the unique code assigned to the framework
   `frameworktext` varchar(255) NOT NULL default '', -- the description/name given to the framework
+  `frameworktype` ENUM( 'bib', 'hld' ) NOT NULL DEFAULT 'bib', -- Framework type: biblio or holdings
   PRIMARY KEY  (`frameworkcode`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -668,6 +669,7 @@ CREATE TABLE `deleteditems` (
   `copynumber` varchar(32) default NULL, -- copy number (MARC21 952$t)
   `stocknumber` varchar(32) default NULL, -- inventory number (MARC21 952$i)
   `new_status` VARCHAR(32) DEFAULT NULL, -- 'new' value, you can put whatever free-text information. This field is intented to be managed by the automatic_item_modification_by_age cronjob.
+  `holding_id` int(11) default NULL, -- foreign key from holdings table used to link this item to the right holdings record
   PRIMARY KEY  (`itemnumber`),
   KEY `delitembarcodeidx` (`barcode`),
   KEY `delitemstocknumberidx` (`stocknumber`),
@@ -879,11 +881,55 @@ CREATE TABLE `refund_lost_item_fee_rules` ( -- refund lost item fee rules tbale
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Table structure for table `holdings`
+--
+
+DROP TABLE IF EXISTS `holdings`;
+CREATE TABLE `holdings` ( -- table that stores summary holdings information
+  `holding_id` int(11) NOT NULL auto_increment, -- unique identifier assigned to each holdings record
+  `biblionumber` int(11) NOT NULL default 0, -- foreign key from biblio table used to link this record to the right bib record
+  `biblioitemnumber` int(11) NOT NULL default 0, -- foreign key from the biblioitems table to link record to additional information
+  `frameworkcode` varchar(4) NOT NULL default '', -- foreign key from the biblio_framework table to identify which framework was used in cataloging this record
+  `holdingbranch` varchar(10) default NULL, -- foreign key from the branches table for the library that owns this record (MARC21 852$a)
+  `location` varchar(80) default NULL, -- authorized value for the shelving location for this record (MARC21 852$b)
+  `callnumber` varchar(255) default NULL, -- call number (852$h+$i in MARC21)
+  `suppress` tinyint(1) default NULL, -- Boolean indicating whether the record is suppressed in OPAC
+  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP, -- date and time this record was last touched
+  `datecreated` DATE NOT NULL, -- the date this record was added to Koha
+	`deleted_at` DATETIME DEFAULT NULL, -- the date this record was deleted
+  PRIMARY KEY  (`holding_id`),
+  KEY `hldnoidx` (`holding_id`),
+  KEY `hldbinoidx` (`biblioitemnumber`),
+  KEY `hldbibnoidx` (`biblionumber`),
+  CONSTRAINT `holdings_ibfk_1` FOREIGN KEY (`biblionumber`) REFERENCES `biblio` (`biblionumber`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `holdings_ibfk_2` FOREIGN KEY (`biblioitemnumber`) REFERENCES `biblioitems` (`biblioitemnumber`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `holdings_ibfk_3` FOREIGN KEY (`holdingbranch`) REFERENCES `branches` (`branchcode`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `holdings_metadata`
+--
+
+DROP TABLE IF EXISTS `holdings_metadata`;
+CREATE TABLE holdings_metadata (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `holding_id` INT(11) NOT NULL,
+  `format` VARCHAR(16) NOT NULL,
+  `marcflavour` VARCHAR(16) NOT NULL,
+  `metadata` LONGTEXT NOT NULL,
+	`deleted_at` DATETIME DEFAULT NULL, -- the date this record was deleted
+  PRIMARY KEY(id),
+  UNIQUE KEY `holdings_metadata_uniq_key` (`holding_id`,`format`,`marcflavour`),
+  KEY `hldnoidx` (`holding_id`),
+  CONSTRAINT `holdings_metadata_fk_1` FOREIGN KEY (`holding_id`) REFERENCES `holdings` (`holding_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
 -- Table structure for table `items`
 --
 
 DROP TABLE IF EXISTS `items`;
-CREATE TABLE `items` ( -- holdings/item information
+CREATE TABLE `items` ( -- item information
   `itemnumber` int(11) NOT NULL auto_increment, -- primary key and unique identifier added by Koha
   `biblionumber` int(11) NOT NULL default 0, -- foreign key from biblio table used to link this item to the right bib record
   `biblioitemnumber` int(11) NOT NULL default 0, -- foreign key from the biblioitems table to link to item to additional information
@@ -929,6 +975,7 @@ CREATE TABLE `items` ( -- holdings/item information
   `copynumber` varchar(32) default NULL, -- copy number (MARC21 952$t)
   `stocknumber` varchar(32) default NULL, -- inventory number (MARC21 952$i)
   `new_status` VARCHAR(32) DEFAULT NULL, -- 'new' value, you can put whatever free-text information. This field is intented to be managed by the automatic_item_modification_by_age cronjob.
+  `holding_id` int(11) default NULL, -- foreign key from holdings table used to link this item to the right holdings record
   PRIMARY KEY  (`itemnumber`),
   UNIQUE KEY `itembarcodeidx` (`barcode`),
   KEY `itemstocknumberidx` (`stocknumber`),
@@ -941,10 +988,12 @@ CREATE TABLE `items` ( -- holdings/item information
   KEY `items_ccode` (`ccode`),
   KEY `itype_idx` (`itype`),
   KEY `timestamp` (`timestamp`),
+  KEY `hldid_idx` (`holding_id`),
   CONSTRAINT `items_ibfk_1` FOREIGN KEY (`biblioitemnumber`) REFERENCES `biblioitems` (`biblioitemnumber`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `items_ibfk_2` FOREIGN KEY (`homebranch`) REFERENCES `branches` (`branchcode`) ON UPDATE CASCADE,
   CONSTRAINT `items_ibfk_3` FOREIGN KEY (`holdingbranch`) REFERENCES `branches` (`branchcode`) ON UPDATE CASCADE,
-  CONSTRAINT `items_ibfk_4` FOREIGN KEY (`biblionumber`) REFERENCES `biblio` (`biblionumber`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `items_ibfk_4` FOREIGN KEY (`biblionumber`) REFERENCES `biblio` (`biblionumber`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `items_ibfk_5` FOREIGN KEY (`holding_id`) REFERENCES `holdings` (`holding_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --

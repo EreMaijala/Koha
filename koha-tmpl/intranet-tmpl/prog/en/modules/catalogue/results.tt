@@ -1,5 +1,6 @@
 [% USE Koha %]
 [% USE Biblio %]
+[% USE Holdings %]
 [% USE KohaDates %]
 [% SET footerjs = 1 %]
 [% IF BiblioDefaultViewmarc %]
@@ -475,6 +476,19 @@
                                 </td>
 
                                 <td><div class="availability">
+                                    [% IF ( SEARCH_RESULT.summary_holdings ) %]
+                                        <div class="holdings">
+                                            <strong>Holdings</strong>
+                                            <ul>
+                                            [% FOREACH holding IN SEARCH_RESULT.summary_holdings %]
+                                                <li>
+                                                    [% Holdings.GetLocation(holding) | html %]
+                                                </li>
+                                            [% END %]
+                                            </ul>
+                                        </div>
+                                    [% END %]
+
                                     [% IF ( SEARCH_RESULT.items_count ) %]
                                         <strong>
                                             [% IF MaxSearchResultsItemsPerRecordStatusCheck && SEARCH_RESULT.items_count > MaxSearchResultsItemsPerRecordStatusCheck %]

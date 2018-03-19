@@ -2212,7 +2212,7 @@ INSERT INTO  marc_subfield_structure (frameworkcode, authtypecode, tagfield, tag
  ('', '', '899', 'z', 0, 1, 'Публикуемое примечание', 'Публикуемое примечание', 8, 0, '', '', '', 0, NULL, '', '');
 
 -- Create the ACQ framework based on the default framework, fields 995 only
-INSERT IGNORE INTO biblio_framework VALUES( 'ACQ', 'Acquisition framework' );
+INSERT IGNORE INTO biblio_framework (frameworkcode, frameworktext) VALUES( 'ACQ', 'Acquisition framework' );
 INSERT INTO marc_tag_structure(tagfield, liblibrarian, libopac, repeatable, mandatory, authorised_value, frameworkcode)
 SELECT tagfield, liblibrarian, libopac, repeatable, mandatory, authorised_value, 'ACQ' FROM marc_tag_structure WHERE tagfield='995' AND frameworkcode='';
 

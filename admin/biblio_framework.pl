@@ -54,11 +54,13 @@ if ( $op eq 'add_form' ) {
 } elsif ( $op eq 'add_validate' ) {
     my $frameworkcode = $input->param('frameworkcode');
     my $frameworktext = $input->param('frameworktext');
+    my $frameworktype = $input->param('frameworktype');
     my $is_a_modif    = $input->param('is_a_modif');
 
     if ($is_a_modif) {
         my $framework = Koha::BiblioFrameworks->find($frameworkcode);
         $framework->frameworktext($frameworktext);
+        $framework->frameworktype($frameworktype);
         eval { $framework->store; };
         if ($@) {
             push @messages, { type => 'error', code => 'error_on_update' };
@@ -69,6 +71,7 @@ if ( $op eq 'add_form' ) {
         my $framework = Koha::BiblioFramework->new(
             {   frameworkcode => $frameworkcode,
                 frameworktext => $frameworktext,
+                frameworktype => $frameworktype,
             }
         );
         eval { $framework->store; };
@@ -117,7 +120,7 @@ if ( $op eq 'add_form' ) {
 }
 
 if ( $op eq 'list' ) {
-    my $frameworks = Koha::BiblioFrameworks->search( {}, { order_by => ['frameworktext'], } );
+    my $frameworks = Koha::BiblioFrameworks->search( undef, { order_by => ['frameworktype', 'frameworktext'] } );
     $template->param( frameworks => $frameworks, );
 }
 

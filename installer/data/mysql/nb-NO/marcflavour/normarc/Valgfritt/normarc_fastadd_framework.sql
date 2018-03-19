@@ -15,7 +15,7 @@
 -- with this program; if not, write to the Free Software Foundation, Inc.,
 -- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-INSERT IGNORE INTO biblio_framework VALUES ( 'FA','Hurtigkatalogisering' );
+INSERT IGNORE INTO biblio_framework (frameworkcode, frameworktext) VALUES ( 'FA','Hurtigkatalogisering' );
 
 DELETE FROM marc_tag_structure WHERE frameworkcode='FA';
 INSERT INTO marc_tag_structure (tagfield,liblibrarian,libopac,repeatable,mandatory,authorised_value,frameworkcode) VALUES ('000','Postens hode','Postens hode','0','1','','FA');

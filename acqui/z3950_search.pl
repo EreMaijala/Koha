@@ -52,7 +52,7 @@ my $page            = $input->param('current_page') || 1;
 $page               = $input->param('goto_page') if $input->param('changepage_goto');
 
 # get framework list
-my $frameworks = Koha::BiblioFrameworks->search({}, { order_by => ['frameworktext'] });
+my $frameworks = Koha::BiblioFrameworks->search({frameworktype => 'bib'}, { order_by => ['frameworktext'] });
 
 my $vendor = Koha::Acquisition::Booksellers->find( $booksellerid );
 

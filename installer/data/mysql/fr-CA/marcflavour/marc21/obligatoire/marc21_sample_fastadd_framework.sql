@@ -1,4 +1,4 @@
-INSERT IGNORE INTO biblio_framework VALUES
+INSERT IGNORE INTO biblio_framework (frameworkcode, frameworktext) VALUES
 		('FA', 'Grille d\'ajout rapide');
 
 INSERT IGNORE INTO marc_tag_structure (tagfield, liblibrarian, libopac, repeatable, mandatory, authorised_value, frameworkcode)

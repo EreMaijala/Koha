@@ -29,10 +29,12 @@ my $nb_of_frameworks = Koha::BiblioFrameworks->search->count;
 my $new_framework_1 = Koha::BiblioFramework->new({
     frameworkcode => 'mfw1',
     frameworktext => 'my_frameworktext_for_fw_1',
+    frameworktype => 'bib',
 })->store;
 my $new_framework_2 = Koha::BiblioFramework->new({
     frameworkcode => 'mfw2',
     frameworktext => 'my_frameworktext_for_fw_2',
+    frameworktype => 'hld',
 })->store;
 
 is( Koha::BiblioFrameworks->search->count, $nb_of_frameworks + 2, 'The 2 biblio frameworks should have been added' );

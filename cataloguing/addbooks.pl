@@ -144,7 +144,7 @@ my $servers = $schema->resultset('Z3950server')->search(
         },
 );
 
-my $frameworks = Koha::BiblioFrameworks->search({}, { order_by => ['frameworktext'] });
+my $frameworks = Koha::BiblioFrameworks->search({frameworktype => 'bib'}, { order_by => ['frameworktext'] });
 $template->param(
     servers           => $servers,
     frameworks        => $frameworks,

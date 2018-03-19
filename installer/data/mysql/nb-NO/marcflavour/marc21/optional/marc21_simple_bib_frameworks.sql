@@ -31480,7 +31480,7 @@ INSERT INTO `marc_subfield_structure` (`tagfield`, `tagsubfield`, `liblibrarian`
 		('998', 'w', 'PLINK (RLIN)', 'PLINK (RLIN)', 0, 0, '', 9, '', '', '', 0, 5, 'SER', '', '', NULL);
 
 -- Create the ACQ framework based on the default framework, fields 952 only
-INSERT IGNORE INTO biblio_framework VALUES( 'ACQ', 'Acquisition framework' );
+INSERT IGNORE INTO biblio_framework (frameworkcode, frameworktext) VALUES( 'ACQ', 'Acquisition framework' );
 INSERT INTO marc_tag_structure(tagfield, liblibrarian, libopac, repeatable, mandatory, authorised_value, frameworkcode)
 SELECT tagfield, liblibrarian, libopac, repeatable, mandatory, authorised_value, 'ACQ' FROM marc_tag_structure WHERE tagfield='952' AND frameworkcode='';
 

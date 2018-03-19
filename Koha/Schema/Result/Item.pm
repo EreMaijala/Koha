@@ -202,7 +202,7 @@ __PACKAGE__->table("items");
 
   data_type: 'timestamp'
   datetime_undef_if_invalid: 1
-  default_value: current_timestamp
+  default_value: 'current_timestamp()'
   is_nullable: 0
 
 =head2 location
@@ -285,6 +285,12 @@ __PACKAGE__->table("items");
   data_type: 'varchar'
   is_nullable: 1
   size: 32
+
+=head2 holding_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
 
 =cut
 
@@ -375,7 +381,7 @@ __PACKAGE__->add_columns(
   {
     data_type => "timestamp",
     datetime_undef_if_invalid => 1,
-    default_value => \"current_timestamp",
+    default_value => "current_timestamp()",
     is_nullable => 0,
   },
   "location",
@@ -406,6 +412,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 32 },
   "new_status",
   { data_type => "varchar", is_nullable => 1, size => 32 },
+  "holding_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -576,6 +584,26 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 holding_id
+
+Type: belongs_to
+
+Related object: L<Koha::Schema::Result::Holding>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "holding_id",
+  "Koha::Schema::Result::Holding",
+  { holding_id => "holding_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
+);
+
 =head2 homebranch
 
 Type: belongs_to
@@ -687,8 +715,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2018-02-18 16:41:12
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CrNXvpDUvvcuPZK2Gfzs/Q
+# Created by DBIx::Class::Schema::Loader v0.07048 @ 2018-03-27 18:01:32
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2by51tQSbBWys0cwsoqyMg
 
 __PACKAGE__->belongs_to( biblioitem => "Koha::Schema::Result::Biblioitem", "biblioitemnumber" );
 

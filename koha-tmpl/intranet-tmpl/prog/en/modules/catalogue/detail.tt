@@ -3,6 +3,7 @@
 [% USE AuthorisedValues %]
 [% USE Branches %]
 [% USE Biblio %]
+[% USE Holdings %]
 
 [% IF Koha.Preference('AmazonAssocTag') %]
     [% AmazonAssocTag = '?tag=' _ Koha.Preference('AmazonAssocTag') %]
@@ -290,11 +291,21 @@
 <div id="bibliodetails" class="toptabs">
 
 <ul>
-    [% IF (SeparateHoldings) %]
-        <li><a href="#holdings">[% LoginBranchname %] holdings</a></li>
-        <li><a href="#otherholdings">Other holdings</a></li>
+    [% IF (show_summary_holdings) %]
+        <li><a href="#summaryholdings">Holdings</a></li>
+        [% IF (SeparateHoldings) %]
+            <li><a href="#holdings">[% LoginBranchname %] itemss</a></li>
+            <li><a href="#otherholdings">Other items</a></li>
+        [% ELSE %]
+            <li><a href="#holdings">Items</a></li>
+        [% END %]
     [% ELSE %]
-        <li><a href="#holdings">Holdings</a></li>
+        [% IF (SeparateHoldings) %]
+            <li><a href="#holdings">[% LoginBranchname %] holdings</a></li>
+            <li><a href="#otherholdings">Other holdings</a></li>
+        [% ELSE %]
+            <li><a href="#holdings">Holdings</a></li>
+        [% END %]
     [% END %]
 [% IF ( MARCNOTES || notes ) %]<li><a href="#description">Descriptions</a></li>[% END %]
 [% IF ( subscriptionsnumber ) %]<li><a href="#subscriptions">Subscriptions</a></li>[% END %]
@@ -306,6 +317,50 @@
     <li class="NovelistSelect" style="display:none;"><a href="#NovelistSelect">NoveList Select</a></li>
 [% END %]
 </ul>
+
+[% IF ( show_summary_holdings ) %]
+    <div id="summaryholdings">
+
+    [% IF ( summary_holdings ) %]
+        <div class="summaryholdings_table_controls">
+        </div>
+        <table class="summaryholdings_table">
+            <thead>
+                <tr>
+                    <th>Library</th>
+                    <th>Location</th>
+                    <th>Call number</th>
+                    <th>Status</th>
+                    [% IF ( CAN_user_editcatalogue_edit_items ) %]<th class="NoSort">&nbsp;</th>[% END %]
+                </tr>
+            </thead>
+            <tbody>
+                [% FOREACH holding IN summary_holdings %]
+                    <tr>
+                        <td class="branch">[% UNLESS ( singlebranchmode ) %][% Branches.GetName( holding.holdingbranch ) %] [% END %]</td>
+                        <td class="location"><span class="shelvingloc">[% holding.location %][% IF ( holding.sub_location ) %] ([% holding.sub_location %])[% END %]</span>
+                        <td class="itemcallnumber">[% IF ( holding.callnumber ) %] [% holding.callnumber %][% END %]</td>
+                        <td class="status">
+                            [% IF ( holding.suppress ) %]
+                                <span class="suppressed">Suppressed in OPAC</span>
+                            [% END %]
+                        </td>
+                    [% IF CAN_user_editcatalogue_edit_items %]
+                        <td class="actions">
+                            <a class="btn btn-default btn-xs" href="/cgi-bin/koha/cataloguing/addholding.pl?op=edit&biblionumber=[% holding.biblionumber %]&holding_id=[% holding.holding_id %]#editholding"><i class="fa fa-pencil"></i> Edit</a>
+                            <a class="btn btn-default btn-xs delete" href="/cgi-bin/koha/cataloguing/addholding.pl?op=delete&biblionumber=[% holding.biblionumber %]&holding_id=[% holding.holding_id %]"><i class="fa fa-eraser"></i> Delete</a>
+                        </td>
+                    [% END %]
+                    </tr>
+                [% END %]
+            </tbody>
+        </table>
+    [% ELSE %]
+        <div id="noitems">No holdings records</div>
+    [% END %]
+
+    </div>
+[% END %]
 
 [% items_table_block_iter = 0 %]
 [% BLOCK items_table %]
@@ -330,6 +385,7 @@
             <tr>
                 [% IF (StaffDetailItemSelection) %]<th class="NoSort"></th>[% END %]
                 [% IF ( item_level_itypes ) %]<th>Item type</th>[% END %]
+                [% IF ( show_summary_holdings ) %]<th>Holding</th>[% END %]
                 <th>Current location</th>
                 <th>Home library</th>
                 [% IF ( itemdata_ccode ) %]<th>Collection</th>[% END %]
@@ -366,6 +422,9 @@
                             [% END %]
                             [% item.translated_description %]
                         </td>
+                    [% END %]
+                    [% IF ( show_summary_holdings ) %]
+                        <td class="holding">[% Holdings.GetLocation(item.holding_id) | html %]</td>
                     [% END %]
                     <td class="location">[% UNLESS ( singlebranchmode ) %][% Branches.GetName( item.branchcode ) %] [% END %]</td>
                     <td class="homebranch">[% Branches.GetName(item.homebranch) %]<span class="shelvingloc">[% item.location %]</span> </td>
@@ -989,12 +1048,16 @@
                     $("input[name='itemnumber'][type='checkbox']", $("#"+tab)).prop('checked', false);
                     itemSelectionBuildActionLinks(tab);
                 });
+
+                $('a.delete').click(function() {
+                    return confirm(_('Are you sure?'));
+                });
             });
         [% END %]
 
         $(document).ready(function() {
             $('#bibliodetails').tabs();
-            [% IF count == 0 %]
+            [% IF count == 0 and not show_summary_holdings %]
                 $('#bibliodetails').tabs("option", "active", 3);
             [% END %]
             $('#search-form').focus();

@@ -6,7 +6,7 @@
 -- *******************************************************************
 -- SIMPLE BOOKS KOHA RECORD AND HOLDINGS MANAGEMENT FIELDS/SUBFIELDS.
 -- *******************************************************************
-INSERT IGNORE INTO biblio_framework VALUES
+INSERT IGNORE INTO biblio_framework (frameworkcode, frameworktext) VALUES
 		( 'BKS', 'Libros' );
 
 INSERT IGNORE INTO marc_tag_structure (
@@ -29,7 +29,7 @@ INSERT IGNORE INTO marc_subfield_structure (
 -- ****************************************************************************
 -- SIMPLE COMPUTER FILES KOHA RECORD AND HOLDINGS MANAGEMENT FIELDS/SUBFIELDS.
 -- ****************************************************************************
-INSERT IGNORE INTO biblio_framework VALUES
+INSERT IGNORE INTO biblio_framework (frameworkcode, frameworktext) VALUES
 		( 'CF', 'CD-ROMs, DVD-ROMs, Recursos en línea' );
 INSERT IGNORE INTO marc_tag_structure (
 		tagfield, liblibrarian, libopac, repeatable, mandatory, authorised_value, frameworkcode)
@@ -52,7 +52,7 @@ INSERT IGNORE INTO marc_subfield_structure (
 -- *****************************************************************************
 -- SIMPLE SOUND RECORDINGS KOHA RECORD AND HOLDINGS MANAGEMENT FIELDS/SUBFIELDS.
 -- *****************************************************************************
-INSERT IGNORE INTO biblio_framework VALUES
+INSERT IGNORE INTO biblio_framework (frameworkcode, frameworktext) VALUES
 		( 'SR', 'Audio Casetes, CD' );
 
 INSERT IGNORE INTO marc_tag_structure (
@@ -76,7 +76,7 @@ INSERT IGNORE INTO marc_subfield_structure (
 -- ****************************************************************************
 -- SIMPLE VIDEORECORDINGS KOHA RECORD AND HOLDINGS MANAGEMENT FIELDS/SUBFIELDS.
 -- ****************************************************************************
-INSERT IGNORE INTO biblio_framework VALUES
+INSERT IGNORE INTO biblio_framework (frameworkcode, frameworktext) VALUES
 		( 'VR', 'DVDs, VHS' );
 
 INSERT IGNORE INTO marc_tag_structure (
@@ -100,7 +100,7 @@ INSERT IGNORE INTO marc_subfield_structure (
 -- **************************************************************************
 -- SIMPLE 3D ARTIFACTS KOHA RECORD AND HOLDINGS MANAGEMENT FIELDS/SUBFIELDS.
 -- **************************************************************************
-INSERT IGNORE INTO biblio_framework VALUES
+INSERT IGNORE INTO biblio_framework (frameworkcode, frameworktext) VALUES
 		( 'AR', 'Modelos' );
 
 INSERT IGNORE INTO marc_tag_structure (
@@ -124,7 +124,7 @@ INSERT IGNORE INTO marc_subfield_structure (
 -- ******************************************************************
 -- SIMPLE KITS KOHA RECORD AND HOLDINGS MANAGEMENT FIELDS/SUBFIELDS.
 -- ******************************************************************
-INSERT IGNORE INTO biblio_framework VALUES
+INSERT IGNORE INTO biblio_framework (frameworkcode, frameworktext) VALUES
 		( 'KT', 'Conjuntos' );
 
 INSERT IGNORE INTO marc_tag_structure (
@@ -148,7 +148,7 @@ INSERT IGNORE INTO marc_subfield_structure (
 -- **********************************************************************************
 -- SIMPLE INTEGRATING RESOURCES KOHA RECORD AND HOLDINGS MANAGEMENT FIELDS/SUBFIELDS.
 -- **********************************************************************************
-INSERT IGNORE INTO biblio_framework VALUES
+INSERT IGNORE INTO biblio_framework (frameworkcode, frameworktext) VALUES
 		( 'IR', 'Carpetas' );
 
 INSERT IGNORE INTO marc_tag_structure (
@@ -172,7 +172,7 @@ INSERT IGNORE INTO marc_subfield_structure (
 -- *********************************************************************
 -- SIMPLE SERIALS KOHA RECORD AND HOLDINGS MANAGEMENT FIELDS/SUBFIELDS.
 -- *********************************************************************
-INSERT IGNORE INTO biblio_framework VALUES
+INSERT IGNORE INTO biblio_framework (frameworkcode, frameworktext) VALUES
 		( 'SER', 'Seriadas' );
 
 INSERT IGNORE INTO marc_tag_structure (
@@ -494,7 +494,7 @@ UPDATE marc_subfield_structure SET hidden = 9 WHERE tagfield = '942' AND tagsubf
 UPDATE marc_subfield_structure SET hidden = 0 WHERE tagfield = '952' AND tagsubfield = '1' AND frameworkcode IN ('AR','BKS','CF','IR','KT','SER','SR','VR');
 
 -- Create the ACQ framework based on the default framework, fields 952 only
-INSERT IGNORE INTO biblio_framework VALUES( 'ACQ', 'Acquisition framework' );
+INSERT IGNORE INTO biblio_framework (frameworkcode, frameworktext) VALUES( 'ACQ', 'Acquisition framework' );
 INSERT INTO marc_tag_structure(tagfield, liblibrarian, libopac, repeatable, mandatory, authorised_value, frameworkcode)
 SELECT tagfield, liblibrarian, libopac, repeatable, mandatory, authorised_value, 'ACQ' FROM marc_tag_structure WHERE tagfield='952' AND frameworkcode='';
 

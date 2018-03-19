@@ -198,7 +198,7 @@ __PACKAGE__->table("deleteditems");
 
   data_type: 'timestamp'
   datetime_undef_if_invalid: 1
-  default_value: current_timestamp
+  default_value: 'current_timestamp()'
   is_nullable: 0
 
 =head2 location
@@ -282,6 +282,11 @@ __PACKAGE__->table("deleteditems");
   is_nullable: 1
   size: 32
 
+=head2 holdingnumber
+
+  data_type: 'integer'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -361,7 +366,7 @@ __PACKAGE__->add_columns(
   {
     data_type => "timestamp",
     datetime_undef_if_invalid => 1,
-    default_value => \"current_timestamp",
+    default_value => "current_timestamp()",
     is_nullable => 0,
   },
   "location",
@@ -392,6 +397,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 32 },
   "new_status",
   { data_type => "varchar", is_nullable => 1, size => 32 },
+  "holdingnumber",
+  { data_type => "integer", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -407,8 +414,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("itemnumber");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2018-02-18 16:41:11
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xb11fPjp5PyXU7yfFWHycw
+# Created by DBIx::Class::Schema::Loader v0.07048 @ 2018-03-27 18:01:32
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4Wn3TX+QZrVviNlZDtKymA
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
